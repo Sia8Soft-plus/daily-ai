@@ -1,0 +1,121 @@
+.mode-quick{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);padding:8px 13px;border-radius:10px;background:var(--panel-strong);font-size:13px;cursor:pointer;color:var(--muted);margin-top:16px;margin-bottom:12px}.mode-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.mode-option{padding:22px 18px;text-align:left;border:1px solid var(--line);border-radius:16px;background:var(--panel-strong);cursor:pointer;transition:.18s}.mode-option:hover{transform:translateY(-2px);box-shadow:var(--shadow-soft)}.mode-option.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent-soft) 38%,var(--panel-strong))}.mode-option strong{display:block;font-size:16px;margin:8px 0}.mode-option small{color:var(--muted);font-size:13px;line-height:1.6;display:block}.mode-option .check{float:right;color:var(--accent);visibility:hidden}.mode-option.selected .check{visibility:visible}.mode-option svg{width:22px;height:22px}.v020-note{font-size:13px;color:var(--muted);padding:12px 16px;background:var(--panel-muted);border-radius:12px;margin-top:15px}.account-view{padding:38px 42px 70px;max-width:1140px;margin:auto}.account-banner{display:flex;justify-content:space-between;align-items:center;padding:28px;border:1px solid var(--line);border-radius:22px;background:var(--panel-strong);gap:20px;margin-bottom:22px}.account-banner h2{font-size:25px;font-weight:550;margin:0 0 7px}.account-banner p{margin:0;color:var(--muted);font-size:14px}.account-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}.account-grid .card{padding:25px}.plan-free{font:36px Georgia,serif;letter-spacing:-1px;margin:18px 0}.plan-list{padding:0;list-style:none;font-size:14px;color:var(--muted);line-height:2}.plan-list li:before{content:'✓';color:var(--accent);margin-right:10px}.share-empty{padding:24px 0;color:var(--muted);font-size:14px}.auth-tabs{display:flex;gap:10px}.auth-tabs button{flex:1}.auth-error{color:var(--danger);font-size:13px;min-height:22px;margin-top:8px}.auth-demo{padding:10px 13px;border-radius:10px;background:var(--accent-soft);font-size:12px;color:var(--accent-ink);margin:14px 0}.auth-form .field{margin-bottom:14px}.auth-links{display:flex;justify-content:space-between;margin-top:14px}.auth-links button{border:0;background:none;color:var(--accent-ink);font-size:13px;cursor:pointer}.share-url{display:flex;gap:10px;margin-top:15px}.share-url input{min-width:0;flex:1}.remote-model-hidden>.setting-row,.remote-model-hidden>.provider-grid,.remote-model-hidden>div:not(#remoteManaged){display:none!important}#remoteManaged{padding:20px 0;color:var(--muted);font-size:14px}#remoteManaged strong{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}#taskOrigin{font-size:10px;padding:2px 6px;border:1px solid var(--line);border-radius:5px;margin-left:7px}.share-consent{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:18px 0}.mini-usage{height:90px;display:flex;align-items:end;gap:8px;margin:20px 0}.mini-usage i{flex:1;background:var(--accent);opacity:.6;border-radius:5px 5px 0 0}.account-chip{cursor:pointer;border:0}.auth-password-wrap{display:flex;gap:6px}.auth-password-wrap input{min-width:0;flex:1}@media(max-width:1100px){.account-grid{grid-template-columns:1fr}.account-view{padding:28px}}
+
+/* Actual account surfaces reuse the approved cream/glass prototype layout. */
+.account-chip{-webkit-app-region:no-drag;flex:none;padding:0;outline-offset:3px}
+.account-chip:hover{box-shadow:0 3px 12px #0002;filter:brightness(1.08)}
+#localModelControls[hidden],#remoteManaged[hidden]{display:none!important}
+#localModelControls>.setting-row{border-bottom:1px solid var(--line)}
+#remoteManaged .secondary-btn{margin-right:10px}
+.account-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.account-notice{font-size:14px;line-height:1.7;color:var(--muted)}
+.account-grid .plan-free small{font:13px system-ui;letter-spacing:0}
+#accountDialog{border:1px solid var(--line);border-radius:24px;padding:28px;background:var(--bg);color:var(--ink);width:min(920px,calc(100vw - 48px));max-height:calc(100vh - 64px);overflow:auto;box-shadow:0 24px 90px #0003}
+#accountDialog[data-kind="auth"]{width:min(470px,calc(100vw - 48px))}
+#accountDialog[data-kind="cancel"]{width:min(540px,calc(100vw - 48px))}
+#accountDialog::backdrop{background:#25282066;backdrop-filter:blur(14px)}
+.account-head{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:16px}
+.account-head h2{font-size:25px;font-weight:550;margin:0}
+.account-head .icon-btn{flex:none;display:grid;place-items:center}
+.account-error{color:var(--danger);font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+.account-error:empty{display:none}
+.account-error:not(:empty){margin:12px 0;padding:10px;border:1px solid color-mix(in srgb,var(--danger) 25%,transparent);border-radius:10px}
+.account-form{display:grid;gap:15px;margin-top:18px}
+.account-form label{display:grid;gap:7px;font-size:14px}
+.account-form input{width:100%;min-width:0;padding:11px 12px;border:1px solid var(--line);border-radius:11px;color:var(--ink);background:var(--panel-strong)}
+.captcha-row{display:flex;align-items:center;gap:12px;margin-top:8px}
+.captcha-row img{max-width:160px}
+.billing-switch{display:flex;justify-content:center;gap:6px;margin:24px 0}
+.billing-switch button{padding:10px 28px;border:1px solid var(--line);border-radius:24px;background:var(--panel);color:var(--ink);cursor:pointer}
+.billing-switch .selected{background:var(--ink);color:var(--bg)}
+.pricing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.pricing-card{padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--panel-strong);display:flex;flex-direction:column;gap:14px}
+.pricing-card:hover{box-shadow:0 10px 30px #0001}
+.pricing-card h3{font-size:23px;margin:0}.pricing-card p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
+.price-number{font-size:44px;font-weight:650;letter-spacing:-2px}.pricing-card button{margin-top:auto}
+.renew-consent{display:flex;gap:10px;align-items:start;font-size:14px;line-height:1.6}
+.renew-consent input{margin-top:5px;flex:none}
+@media(max-width:800px){.pricing-grid,.mode-options{grid-template-columns:1fr}.account-banner{align-items:flex-start;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){.mode-option,.account-chip{transition:none}.mode-option:hover{transform:none}}
+
+/* Shared with the existing settings and report surfaces: cream, quiet borders,
+   restrained glass, and the same typography in both appearance modes. */
+.account-view{max-width:1120px;padding:32px 36px 56px}
+.account-banner{padding:22px 24px;border-radius:18px;background:var(--panel);margin-bottom:18px;backdrop-filter:blur(18px)}
+.account-banner h2{font-size:21px;line-height:1.4;font-weight:600;overflow-wrap:anywhere}
+.account-banner p,.account-notice{line-height:1.65}
+.account-grid{gap:18px;align-items:stretch}
+.account-grid .card{padding:24px;border-radius:18px;min-width:0}
+.account-grid .plan-free{font-family:inherit;font-size:27px;font-weight:600;letter-spacing:-.5px;line-height:1.4;margin:18px 0 14px}
+.account-grid .plan-list{line-height:1.7;display:grid;gap:9px;margin:16px 0 24px}
+.account-actions{gap:10px;row-gap:12px}
+.account-actions button{min-height:38px}
+#accountDialog,.daily-dialog{box-sizing:border-box;color:var(--ink);background:var(--panel-strong);border:1px solid var(--line);border-radius:20px;padding:26px;max-height:calc(100dvh - 48px);overflow:auto;box-shadow:0 24px 72px #0003;backdrop-filter:blur(24px);font-family:inherit}
+.daily-dialog{width:min(560px,calc(100vw - 48px))}
+#accountDialog::backdrop,.daily-dialog::backdrop{background:rgba(20,22,19,.35);backdrop-filter:blur(8px)}
+.account-head h2,.dialog-title{font-family:Georgia,"Noto Serif SC",serif;font-size:24px;font-weight:500;line-height:1.4;margin:0}
+.account-head{margin-bottom:18px}
+.daily-dialog>p{font-size:14px;line-height:1.75;color:var(--muted);margin:14px 0 20px}
+.account-form{gap:17px;margin-top:22px}
+.account-form label{font-size:14px;line-height:1.5}
+.account-form input,.share-dialog input[readonly]{box-sizing:border-box;min-height:42px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);font:inherit}
+.account-form input:focus-visible,.share-dialog input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.account-form button{min-height:40px}
+.auth-password-wrap{align-items:stretch;gap:8px}
+.auth-password-wrap button{flex:none;min-width:52px}
+.billing-switch{width:fit-content;margin:20px auto 24px;padding:4px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.billing-switch button{border:0;border-radius:9px;background:transparent;padding:8px 28px;font:inherit;font-size:14px}
+.billing-switch .selected{background:var(--panel-strong);color:var(--ink);box-shadow:0 2px 8px #0001}
+.pricing-grid{gap:16px}
+.pricing-card{border-radius:16px;padding:24px;gap:16px;background:var(--panel);transition:box-shadow .18s,border-color .18s}
+.pricing-card.current-plan{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.pricing-card h3{font-size:19px;font-weight:600}
+.price-number{font-size:38px;font-weight:600;letter-spacing:-1px;line-height:1.2;font-variant-numeric:tabular-nums}
+.pricing-card .plan-list{line-height:1.9;margin:0}
+.renew-consent,.share-consent{padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--panel);line-height:1.65;align-items:flex-start}
+.renew-consent input,.share-consent input{accent-color:var(--accent);width:16px;height:16px;margin:4px 0 0;flex:none}
+.share-list-row{display:flex;gap:16px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line)}
+.share-list-row>span{flex:1;min-width:0;overflow-wrap:anywhere;font-size:14px;line-height:1.6}
+.share-list-row button{flex:none}
+.share-list-row:last-child{border-bottom:0}
+.mode-option{border-radius:14px;padding:20px;background:var(--panel)}
+.mode-option:hover{transform:translateY(-1px)}
+#accountDialog button:focus-visible,.daily-dialog button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:800px){.account-view{padding:24px}.account-banner{padding:20px}.pricing-card{padding:20px}}
+@media(prefers-reduced-motion:reduce){.pricing-card{transition:none}.mode-option:hover{transform:none}}
+
+.share-url[hidden]{display:none!important}
+
+.share-dialog>div:last-child{justify-content:flex-end}
+
+#settings-account .account-banner{margin-top:22px}
+#settings-account .account-grid{grid-template-columns:1.15fr 1fr}
+#settings-account .card{box-shadow:none;background:var(--panel)}
+.account-form .remember-account{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:13px}
+.account-form .remember-account input{width:16px;height:16px;min-height:0;margin:0;accent-color:var(--accent)}
+@media(max-width:1000px){#settings-account .account-grid{grid-template-columns:1fr}}
+
+#accountPageContent>p{font-size:13px;line-height:1.7;color:var(--muted)}
+
+.subscription-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.subscription-badge{font-size:12px;padding:5px 9px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink)}
+.subscription-details{display:grid;grid-template-columns:auto 1fr;gap:12px 20px;font-size:14px;line-height:1.6;margin:22px 0}
+.subscription-details dt{color:var(--muted)}.subscription-details dd{margin:0;text-align:right;overflow-wrap:anywhere}
+.pricing-card.current-plan{border-color:var(--accent);background:color-mix(in srgb,var(--accent-soft) 28%,var(--panel))}
+#accountDialog[data-kind="confirm-plan"]{width:min(620px,calc(100vw - 48px))}
+
+/* Pending subscription changes occupy their own flow row, never an inline footer. */
+.subscription-pending{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:18px 0;padding:16px;background:var(--panel-muted);border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:14px;line-height:1.75;overflow-wrap:anywhere}
+.subscription-pending>button{justify-self:start;max-width:100%;white-space:normal;height:auto;padding:8px 12px}
+.subscription-pending+.account-actions{padding-top:4px;position:static}
+.account-grid .account-actions>button{height:auto;white-space:normal;padding:9px 14px}
+.subscription-receipt{padding:14px 16px;background:var(--accent-soft);color:var(--accent-ink);border:1px solid var(--line);border-radius:12px;font-size:14px;line-height:1.7;overflow-wrap:anywhere}
+#modelDiscoveryStatus{display:block;line-height:1.6;color:var(--muted);margin:9px 0;overflow-wrap:anywhere}
+#refreshModels{margin-top:10px}
+
+#settings-account .account-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.subscription-details{grid-template-columns:minmax(110px,1fr) minmax(0,1.2fr)}
+.subscription-details dd{word-break:normal}
+
+.plan-toolbar{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:20px 0}.plan-toolbar .billing-switch{margin:0;max-width:100%;flex-wrap:wrap}.plan-empty{padding:28px;text-align:center}.pricing-card{min-width:0;overflow-wrap:anywhere}.pricing-card h3{overflow-wrap:anywhere}
+
+.pricing-grid:has(.pricing-card:only-child){grid-template-columns:minmax(0,540px);justify-content:center}.plan-description,.plan-remark{white-space:pre-line;overflow-wrap:anywhere}.plan-remark{font-size:13px;color:var(--muted)}

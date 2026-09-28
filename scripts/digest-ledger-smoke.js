@@ -1,0 +1,50 @@
+const {app}=require('electron');
+const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),assert=require('node:assert/strict');
+const {DailyAiDatabase}=require('../main/database');
+const {PushedNews,keysFor,canonicalUrl,WEEK,MAX_KEYS}=require('../main/pushed-news');
+const {saveSnapshot,fingerprint}=require('../main/report-snapshot');
+const {previewDigest}=require('../main/digest-service');
+const {GenerationService}=require('../main/generation-service');
+app.whenReady().then(async()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'daily-ai-digest-test-')),db=new DailyAiDatabase(root);
+  try{
+    const topic=db.listTopics()[0],revision=db.getTopicRevision(),before=fingerprint(topic);
+    const updated=db.updateTopic(topic.id,{name:topic.name_zh,description:topic.description+'   ',min_items:topic.min_items});
+    assert.equal(updated.name_en,topic.name_en);assert.equal(db.getTopicRevision(),revision);assert.equal(before,fingerprint({...topic,name_en:'Automatically translated display label'}));
+    db.setTopicEnabled(topic.id,false);db.setTopicEnabled(topic.id,true);assert.equal(before,fingerprint(db.listTopics().find(t=>t.id===topic.id)));
+    const ledger=new PushedNews(db),source={id:'s1',url:'https://www.example.com/research?id=1&utm_campaign=x',title:'A distinct new research result in vision',source:'Example',publishedAt:'2026-09-25'};
+    const snapshot={zh:{title:'Daily',sections:[{topic_id:'t1',title:'Vision',items:[{headline:'A distinct new research result in vision',summary:'Two reviewed experiments improved the result.',source_ids:['s1']}]}]},sources:[source]};snapshot.en=structuredClone(snapshot.zh);
+    ledger.record(snapshot);let keys=ledger.load();assert(keysFor({headline:'Reworded headline'},[{...source,url:'https://example.com/research?utm_source=y&id=1#details'}]).some(key=>keys.has(key)));
+    assert.equal(canonicalUrl('https://arxiv.org/pdf/2609.12345v2.pdf'),'arxiv:2609.12345');
+    const first=db.db.prepare('SELECT pushed_at FROM pushed_news LIMIT 1').get().pushed_at;ledger.record(snapshot,Date.now()+1000);assert.equal(db.db.prepare('SELECT pushed_at FROM pushed_news LIMIT 1').get().pushed_at,first,'Rebuilds must not extend dedup retention');
+    db.db.prepare('UPDATE pushed_news SET pushed_at=?').run(Date.now()-WEEK-10);assert.equal(ledger.load().size,0);
+    const insert=db.db.prepare('INSERT INTO pushed_news VALUES(?,?)');db.db.exec('BEGIN');for(let i=0;i<MAX_KEYS+10;i++)insert.run('limit-'+i,Date.now());db.db.exec('COMMIT');ledger.prune();assert.equal(ledger.load().size,MAX_KEYS);db.db.exec('DELETE FROM pushed_news');
+    const {ActivityStore}=require('../main/activity'),activities=new ActivityStore(db);for(let i=0;i<12;i++)activities.add({key:'message-'+i,title:{en:'Test'},body:{en:'Test'}});assert.equal(activities.list().length,8);assert.equal(activities.clear().length,0);assert.equal(activities.unread(),0);
+    db.saveVerifiedModel({id:'test',provider:'custom',model:'test',baseUrl:'https://example.com/v1'},'key');
+    const add=(id,favorite=false)=>{const file=path.join(root,id+'.html');fs.writeFileSync(file,'<html>original '+id+'</html>');db.insertReport({id,title:id,report_type:'daily',period_start:'2026-09-25',period_end:'2026-09-25',created_at:new Date().toISOString(),html_path:file});saveSnapshot(root,id,snapshot);if(favorite)db.toggleFavorite(id);};
+    add('one');add('two',true);assert.equal(previewDigest(db,{start:'2026-09-25',end:'2026-09-25'}).length,2);assert.throws(()=>previewDigest(db,{start:'2026-02-30',end:'2026-03-01'}));
+    let release,started,progress=[];
+    const goodCaller=async request=>{const input=JSON.parse(request.messages[1].content);return {text:JSON.stringify({items:[{headline:'Consolidated verified finding',summary:'Both reports describe the same result; the digest merges them.',source_ids:input.items[0].source_ids}]})};};
+    const service=new GenerationService({database:db,vault:{get:()=> 'test-key'},dataDir:root,onProgress:s=>progress.push({...s}),onComplete:()=>{},services:{callModel:goodCaller,translateReport:async report=>structuredClone(report)}});
+    const selection={start:'2026-09-25',end:'2026-09-25',ids:['one','two']};
+    const wait=async()=>{const deadline=Date.now()+4000;while(service.running&&Date.now()<deadline)await new Promise(r=>setTimeout(r,10));assert(!service.running,'Task must terminate');};
+    service.services.callModel=()=>new Promise(resolve=>{release=resolve;started=true;});
+    assert.equal(service.start({digest:selection}).status,'started');assert.equal(service.start().status,'running');
+    while(!started)await new Promise(r=>setTimeout(r,5));service.cancel();await wait();release({text:'{}'});await new Promise(r=>setTimeout(r,30));assert(!db.getReport('one').deleted_at);assert.equal(db.listReports().filter(r=>r.report_type==='digest').length,0);assert.equal(service.state.status,'cancelled');
+    service.services.callModel=async()=>({text:JSON.stringify({items:[{headline:'Bad citation',summary:'No evidence',source_ids:['foreign-source']}]})});service.start({digest:selection});await wait();assert.equal(service.state.status,'failed');assert(!db.getReport('one').deleted_at);
+    db.setSetting('preferences',{language:'zh-CN',reportLanguage:'en-US'});
+    service.services.callModel=goodCaller;service.start({digest:selection});await wait();assert.equal(service.state.status,'completed');assert(db.getReport('one').deleted_at);assert(!db.getReport('two').deleted_at,'Favorites must remain');
+    const digest=db.listReports().find(r=>r.report_type==='digest');assert(digest);assert.match(fs.readFileSync(digest.html_path,'utf8'),/id="daily-lang-en"[^>]*checked/);assert.match(fs.readFileSync(digest.html_path,'utf8'),/data-bilingual="true"/);assert(!previewDigest(db,selection).some(r=>r.id===digest.id));assert.equal(service.state.cleanup.moved,1);assert(progress.some(s=>s.status==='running'&&s.percent>=90));
+    // Real generation pipeline must filter old candidates before editing and again before save.
+    ledger.record(snapshot);for(const t of db.listTopics())db.setTopicEnabled(t.id,false);
+    const t=db.addTopic({name:'Dedup test topic',description:'Exercise the final delivered news filtering pass',min_items:1});
+    const pool=[{...source,id:'old',topicIds:[t.id]},{...source,id:'renamed',url:'https://example.com/reprint',title:'Different source headline',topicIds:[t.id]},{...source,id:'fresh',url:'https://example.com/fresh',title:'Completely new experiment',topicIds:[t.id]}];
+    let editorIds=[];
+    const generation=new GenerationService({database:db,vault:{get:()=> 'test-key'},dataDir:root,onProgress:()=>{},onComplete:()=>{},services:{planTopics:async()=>({expansions:[],warnings:[]}),collectIntelligence:async()=>({sources:pool,fetched:3,searchStats:{},coverage:[],failures:[],plan:[],rejections:[]}),summarizeTopics:async({sources})=>{editorIds=sources.map(s=>s.id);return {warnings:[],report:{title:'Filtered report',sections:[{topic_id:t.id,title:t.name_zh,items:[{topic_id:t.id,topic_reviewed:3,headline:source.title,summary:'Repeated finding with a different URL',source_ids:['renamed']},{topic_id:t.id,topic_reviewed:3,headline:'Entirely fresh experimental result',summary:'Fresh evidence',source_ids:['fresh']}]}]}};},translateReport:async report=>structuredClone(report)}});
+    await generation.run('2026-09-26',db.getDefaultModelRecord(),db.getTopicRevision());assert(!editorIds.includes('old'));const filtered=db.latestDailyReport('2026-09-26');const saved=JSON.parse(fs.readFileSync(path.join(root,'report-snapshots',filtered.id+'.json')));assert.equal(saved.zh.sections[0].items.length,1);assert.equal(saved.zh.sections[0].items[0].headline,'Entirely fresh experimental result');
+    db.setTopicEnabled(t.id,false);db.setTopicEnabled(t.id,true);assert.equal(generation.start({reportDate:'2026-09-26'}).status,'already_generated','Toggling away and back must not falsely invalidate identical settings');
+    const {loadArchiveSnapshot}=require('../main/report-snapshot');const legacyFile=path.join(root,'legacy.html');fs.writeFileSync(legacyFile,'<html><main><section data-topic-id="legacy-topic"><h2>Vision</h2><article class="item"><h3>Older verified finding</h3><p>Original evidence &amp; analysis</p><a href="https://example.com/legacy">Original · 2026-09-25</a></article></section></main></html>');const legacy=loadArchiveSnapshot(root,{id:'legacy',html_path:legacyFile,title:'Legacy report'});assert.equal(legacy.zh.sections[0].items[0].summary,'Original evidence & analysis');assert.equal(legacy.sources.length,1);
+    console.log(JSON.stringify({noOpTopicEdit:true,weekLedger:true,keyCap:MAX_KEYS,digestSaved:true,originalsRecycled:true,favoriteProtected:true,cancelSafe:true,invalidCitationBlocked:true}));
+  }finally{db.close();assert(root.startsWith(os.tmpdir()+path.sep));fs.rmSync(root,{recursive:true,force:true});}
+  app.quit();
+}).catch(error=>{console.error(error);app.exit(1);});

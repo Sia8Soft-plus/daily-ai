@@ -1,0 +1,27 @@
+name: Bug report / 问题报告
+description: Report a reproducible problem without secrets
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version and OS / 版本与系统
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps, expected and actual behavior / 复现步骤、预期与实际
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Redacted evidence / 脱敏证据
+      description: Do not attach keys, tokens, private reports or databases.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy / 隐私
+      options:
+        - label: I removed secrets and personal data / 已移除凭据与个人资料
+          required: true

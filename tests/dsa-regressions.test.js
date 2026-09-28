@@ -1,0 +1,9 @@
+const test=require('node:test'),assert=require('node:assert/strict');
+test('planning works through RPC without a writable routeStore',async()=>{
+ const glm=require('../dsa/core/glm-client'),original=glm.callModel;glm.callModel=async()=>({text:JSON.stringify({topics:[{topic_id:'fresh',local_query:'检索',english_query:'search'}]})});delete require.cache[require.resolve('../dsa/core/editor')];
+ try{const {planTopics}=require('../dsa/core/editor');const result=await planTopics([{id:'fresh',name_zh:'AI',description:'AI developments'}],{},{load:()=>null});assert.equal(result.expansions[0].topic_id,'fresh');}finally{glm.callModel=original;delete require.cache[require.resolve('../dsa/core/editor')];}
+});
+test('RPC refill returns new sources to the same editorial array',async()=>{
+ const {createServer}=require('../dsa/local/rpc');const server=createServer({authorize:async()=>({id:'test'}),operations:{summarize:async a=>{const sources=a.sources;await a.searchMore({id:'topic'},1,{});return {count:sources.length,ids:sources.map(s=>s.id)}}}});await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+server.address().port;
+ try{const response=await fetch(base+'/rpc',{method:'POST',body:JSON.stringify({operation:'summarize',args:{sources:[{id:'old'}]},callbackMethods:['searchMore']})});let buffer='',result;for await(const chunk of response.body){buffer+=Buffer.from(chunk).toString();let end;while((end=buffer.indexOf('\n'))>=0){const row=JSON.parse(buffer.slice(0,end));buffer=buffer.slice(end+1);if(row.type==='callback'){const r=await fetch(base+'/rpc/callback/'+row.callbackId,{method:'POST',body:JSON.stringify({data:{sources:[{id:'old'},{id:'new',url:'https://example.com/new'}]}})});assert.equal(r.status,200);}if(row.type==='result')result=row.data;}}assert.deepEqual(result,{count:2,ids:['old','new']});}finally{await server.stop()}
+});

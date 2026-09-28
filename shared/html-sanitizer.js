@@ -1,0 +1,3 @@
+const sanitize=require('sanitize-html');
+function cleanHtml(html){return '<!doctype html>'+sanitize(html,{allowedTags:[...sanitize.defaults.allowedTags,'html','head','body','title','style','input','label'],allowedAttributes:{'*':['class','id','lang'],a:['href','title','target','rel'],input:['id','name','type','checked'],label:['for'],html:['lang']},allowedSchemes:['https','http'],allowProtocolRelative:false,allowVulnerableTags:true,transformTags:{input:(tag,attrs)=>({tagName:'input',attribs:{id:attrs.id||'',name:'report-language',type:'radio',...(Object.hasOwn(attrs,'checked')?{checked:''}:{})}}),a:sanitize.simpleTransform('a',{rel:'noopener noreferrer',target:'_blank'})}});}
+module.exports={cleanHtml};

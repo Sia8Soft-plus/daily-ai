@@ -1,0 +1,13 @@
+node_modules/
+work/
+dist/
+*.log
+.env
+.env.*
+!.env.example
+*.sqlite*
+*.db*
+*.key
+*.pem
+.DS_Store
+Thumbs.db

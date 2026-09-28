@@ -1,0 +1,2 @@
+const test=require('node:test'),assert=require('node:assert/strict');
+test('shared sanitizer preserves bilingual controls and removes active content',()=>{const html=require('../shared/html-sanitizer').cleanHtml('<script>alert(1)</script><p onclick="x()">Text</p><input type="radio" id="en"><label for="en">English</label><a href="javascript:alert(1)">bad</a>');assert.doesNotMatch(html,/<script|onclick|javascript:/);assert.match(html,/type="radio"/);assert.match(html,/<label for="en">/);});

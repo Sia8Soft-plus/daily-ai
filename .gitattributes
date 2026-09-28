@@ -1,0 +1,9 @@
+* text=auto
+*.js text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.png binary
+*.ico binary
+
+# Preserve verbatim upstream license formatting.
+docs/licenses/** -whitespace

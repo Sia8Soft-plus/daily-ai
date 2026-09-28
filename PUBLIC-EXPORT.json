@@ -1,0 +1,41 @@
+{
+  "version": "0.2.13",
+  "scope": [
+    "Daily AI desktop",
+    "local-DSA",
+    "shared retrieval and model core"
+  ],
+  "excluded": [
+    "remote-DSA implementation",
+    "installer implementation",
+    "private deployment",
+    "credentials and user data"
+  ],
+  "license": "MIT",
+  "tests": [
+    "credentials.test.js",
+    "daily-reuse.test.js",
+    "dashboard-stats.test.js",
+    "dsa-account-mode.test.js",
+    "dsa-regressions.test.js",
+    "html-sanitizer.test.js",
+    "incremental-bilingual.test.js",
+    "install-location.test.js",
+    "local-dsa-start.test.js",
+    "model-discovery.test.js",
+    "preferences.test.js",
+    "remember-account.test.js",
+    "report-render.test.js",
+    "routing-activity.test.js",
+    "scheduler.test.js",
+    "search-optimization.test.js",
+    "search-policy.test.js",
+    "search-quality.test.js",
+    "task-control.test.js",
+    "topic-contract.test.js",
+    "updater-launch.test.js",
+    "updater.test.js"
+  ],
+  "sync": "Live website links and Windows updater with data-preserving rollback.",
+  "maintainer": "zkccpro"
+}

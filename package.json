@@ -1,0 +1,88 @@
+{
+  "name": "daily-ai",
+  "version": "0.2.13",
+  "private": true,
+  "description": "Local-first AI progress digest desktop client",
+  "main": "main/index.js",
+  "scripts": {
+    "start": "electron .",
+    "check": "node scripts/check.js && node --check main/daily-reuse.js",
+    "test": "node --experimental-sqlite --test tests/*.test.js",
+    "test:ui": "electron scripts/ui-smoke.js",
+    "test:single-instance": "electron scripts/single-instance-smoke.js",
+    "test:windows-shell": "electron scripts/windows-shell-smoke.js",
+    "test:storage": "electron scripts/storage-smoke.js",
+    "test:digest": "electron scripts/digest-ledger-smoke.js",
+    "test:ux": "electron scripts/ux-benchmark.js",
+    "test:dsa-ui": "electron scripts/dsa-mode-smoke.js",
+    "test:account-ui": "electron scripts/dsa-account-ui-smoke.js",
+    "test:model-ui": "electron scripts/model-discovery-ui-smoke.js",
+    "verify:win": "npm run check && npm test && npm run test:ui && npm run test:single-instance && npm run test:windows-shell && npm run test:storage && npm run test:digest && npm run test:ux && npm run test:dsa-ui && npm run test:account-ui && npm run test:model-ui && npm run test:updater-ui && npm run test:updater",
+    "build:win": "electron-builder --win dir",
+    "dist:win": "npm run build:win && node scripts/package-zip.js",
+    "dist:linux": "electron-builder --linux tar.gz",
+    "audit:public": "node scripts/audit-public.js",
+    "test:updater": "node scripts/updater-native-smoke.js",
+    "test:updater-ui": "electron scripts/updater-ui-smoke.js"
+  },
+  "devDependencies": {
+    "archiver": "7.0.1",
+    "electron": "41.10.7",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.dailyai.desktop.v2",
+    "productName": "Daily AI",
+    "asar": true,
+    "asarUnpack": [
+      "assets/icon.ico",
+      "assets/icon.png"
+    ],
+    "files": [
+      "main/**/*",
+      "renderer/**/*",
+      "shared/**/*",
+      "assets/**/*",
+      "preload.js",
+      "package.json",
+      "dsa/core/**/*",
+      "dsa/client/**/*",
+      "dsa/local/**/*"
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        "zip"
+      ],
+      "artifactName": "Daily-AI-Windows-${version}.${ext}"
+    },
+    "linux": {
+      "target": [
+        "tar.gz"
+      ],
+      "category": "Utility",
+      "artifactName": "Daily-AI-Ubuntu-${version}.${ext}"
+    },
+    "electronLanguages": [
+      "en-US",
+      "zh-CN"
+    ],
+    "directories": {
+      "output": "work/build"
+    }
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.1",
+    "sanitize-html": "^2.17.7"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "^22.14.0 || ^24.0.0"
+  },
+  "author": "zkccpro",
+  "homepage": "https://www.ai4indus.com/daily-ai/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sia8Soft-plus/daily-ai.git"
+  }
+}
